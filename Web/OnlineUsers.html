@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>TC-Statistic</title>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+      <style type="text/css">
+         ${demo.css}
+      </style>
+	  <style type="text/css">
+         h2{
+			margin-top:0px;
+			margin-bottom:0px;
+		 }
+      </style>
+      <script type="text/javascript">
+         var chart; 
+         function requestData() {
+         	$.ajax({
+         	url: 'Filer.php?rem=3ba9b5256dfeb47ba867501ea90d03e5',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chart.series[0].setData(data);
+         	},      
+         	});
+			
+			$.ajax({
+         	url: 'Filer.php?rem=d5228c067b95f1d1d591f6f9a7be4363',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chart.series[1].setData(data);
+         	},      
+         	});
+         }
+		 
+		 function requestSevenDayData() {
+         	$.ajax({
+         	url: 'Filer.php?rem=84f66a2fdf10e7a2f4998d602ad0dc8b',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chartSevenDay.series[0].setData(data);
+         	},      
+         	});
+			
+			$.ajax({
+         	url: 'Filer.php?rem=d45c8fe232afde3944dcce2c10a15219',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chartSevenDay.series[1].setData(data);
+         	},      
+         	});
+         }
+         
+         function requestDataExeVer() {
+         	$.ajax({
+         	url: 'Filer.php?rem=1d6b630c530562734bc84ea9df530744',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chartExeVer.series[0].setData(data);
+         	},      
+         	});
+         }
+		 
+		 function requestSystem() {
+         	$.ajax({
+         	url: 'Filer.php?rem=84afefefa7fe167778b080fce5b315c7',
+         	datatype: "json",
+         	success: function(data) 
+         	{
+         		   chartSystem.series[0].setData(data);
+         	},      
+         	});
+         }
+         
+         $(document).ready(function() {
+         	Highcharts.setOptions({
+         		global: {
+         			useUTC: false
+         		}
+         	});
+         	chart = new Highcharts.Chart({
+         		chart: {
+         		renderTo: 'UsersPerDay',
+         		type: 'areaspline',
+         		events: {
+					load: function() {
+						requestData();
+                        setInterval(function() {
+                            requestData();
+                        }, 600000);
+                    }
+         		}
+         	 },
+         	 title: {
+         		text: 'Количество пользователей за 24 часа'
+         	 },
+         	 xAxis: {
+         		type: 'datetime'
+         	 },
+         	 yAxis: {
+         		minPadding: 0.2,
+         			maxPadding: 0.2,
+         			title: {
+         				text: 'Количество / час',
+         				margin: 80
+         			}
+         	 },
+			 plotOptions: {
+				areaspline: {
+					lineWidth: 1
+				},
+				series: {
+					marker: {
+						enabled: false,
+						symbol: 'circle',
+                        radius: 2,
+						states: {
+							hover: {
+								enabled: true
+							}
+						}
+					}
+				}
+			 },
+         	 series: [{
+         		name: 'Число пользователей',
+         		data: [],
+         	 }, {
+         		name: 'Число заявок',
+         		data: [],
+         	 }]
+         	});
+           
+			chartSevenDay = new Highcharts.Chart({
+         		chart: {
+         		renderTo: 'UsersPerSevenDay',
+         		type: 'areaspline',
+         		events: {
+					load: function() {
+						requestSevenDayData();
+                        setInterval(function() {
+                            requestSevenDayData();
+                        }, 600000);
+                    }
+         		}
+         	 },
+         	 title: {
+         		text: 'Количество пользователей за 7 дней'
+         	 },
+         	 xAxis: {
+         		type: 'datetime'
+         	 },
+         	 yAxis: {
+         		minPadding: 0.2,
+         			maxPadding: 0.2,
+         			title: {
+         				text: 'Количество / час',
+         				margin: 80
+         			}
+         	 },
+			 plotOptions: {
+				areaspline: {
+					lineWidth: 1
+				},
+				series: {
+					marker: {
+						enabled: false,
+						symbol: 'circle',
+                        radius: 2,
+						states: {
+							hover: {
+								enabled: true
+							}
+						}
+					}
+				}
+			 },
+         	 series: [{
+         		name: 'Число пользователей',
+         		data: [],
+         	 }, {
+         		name: 'Число заявок',
+         		data: [],
+         	 }]
+         	});
+		   
+         	chartExeVer = new Highcharts.Chart({
+         		chart: {
+         		renderTo: 'ExeVer',
+         		type: 'area',
+         		events: {
+					load: function() {
+						requestDataExeVer();
+                        setInterval(function() {
+                            requestDataExeVer();
+                        }, 600000);
+                    }
+         		}
+         	 },
+         	 title: {
+                   text: 'Используемые версии программ за 7 дней'
+               },
+               tooltip: {
+           	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+               },
+               plotOptions: {
+                   pie: {
+                       allowPointSelect: true,
+                       cursor: 'pointer',
+                       dataLabels: {
+                           enabled: true,
+                           format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                           style: {
+                               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                           }
+                       }
+                   }
+               },
+               series: [{
+                   type: 'pie',
+                   name: 'Exe version',
+                   data: []
+               }]
+         	});
+			
+			chartSystem = new Highcharts.Chart({
+         		chart: {
+         		renderTo: 'SystemDiv',
+         		type: 'area',
+				events: {
+					load: function() {
+						requestSystem();
+                        setInterval(function() {
+                            requestSystem();
+                        }, 600000);
+                    }
+         		}
+         	 },
+         	 title: {
+                   text: 'Используемые версии ОС за 7 дней'
+               },
+               tooltip: {
+           	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+               },
+               plotOptions: {
+                   pie: {
+                       allowPointSelect: true,
+                       cursor: 'pointer',
+                       dataLabels: {
+                           enabled: true,
+                           format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                           style: {
+                               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                           }
+                       }
+                   }
+               },
+               series: [{
+                   type: 'pie',
+                   name: 'System',
+                   data: []
+               }]
+         	});
+         });
+      </script>
+   </head>
+   <body>
+      <div id="countdown" style="font-family: Lucida Grande, Lucida Sans Unicode, Arial, Helvetica, sans-serif; margin: 0 auto;"></div>
+	  <div id="ReqCount" style="font-family: Lucida Grande, Lucida Sans Unicode, Arial, Helvetica, sans-serif; margin: 0 auto;"></div>
+      <!--<p id="note" style="font-family: Lucida Grande, Lucida Sans Unicode, Arial, Helvetica, sans-serif; margin: 0 auto;"></p>-->
+	  <hr>
+      </br>
+      <div id="UsersPerDay" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      <hr>
+	  <div id="UsersPerSevenDay" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      <hr>
+	  <div id="ExeVer" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+	  <hr>
+	  <div id="SystemDiv" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+      
+      <script src="/js/jquery.countdown.js"></script>
+      <script src="/js/script.js"></script>
+      <script src="/js/highcharts.js"></script>
+      <script src="/js/modules/exporting.js"></script>
+   </body>
+</html>
